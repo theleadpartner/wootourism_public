@@ -4,7 +4,7 @@
 **Baseline branch:** `main`  
 **Baseline HEAD:** `107bd36eccb87de265126661726c8232750bf1da`  
 **Date:** 2026-10-02  
-**Status:** Documentation only. Implementation remains blocked because the repository does not currently contain WooTourism source code. Production evidence gathered on 2026-10-02 increases the priority of resolving this blocker.
+**Status:** Documentation only. A matching WooTourism source repository has now been identified in `theleadpartner/wootourism`, but implementation remains blocked in this repository because `wootourism_public` contains no runtime source and the private repository is outside the authorized write scope of this remediation.
 
 ## 1. Purpose
 
@@ -34,14 +34,20 @@ Therefore this repository cannot currently be used to inspect or modify the prod
 
 No WooTourism implementation may be created from assumptions in this repository.
 
-Before any code remediation:
+Read-only verification on 2026-10-02 identified `theleadpartner/wootourism` as a private repository containing WooTourism version `1.0.2`, matching the version and diagnostic strings observed in production. Its verified `main` HEAD at the time of review was `45bdae73168c499a7f39dfc8bf7f687d6fb0ba8a`.
 
-1. identify the repository or branch that contains the exact WooTourism code deployed on All Ways Colombia;
-2. confirm its current production version/commit where possible;
-3. decide whether that canonical source should be synchronized into this repository or whether remediation belongs in a different repository;
-4. compare the deployed/canonical implementation with the integration assumptions currently present in `theleadpartner/all_ways_colombia`.
+The private bootstrap also contains the production-relevant pattern:
 
-Until that source-of-truth question is resolved, this repository remains documentation-only for this issue.
+- `WOOTOURISM_DEBUG` defaults to `true` when not predefined;
+- normal plugin initialization is wrapped in debug logging;
+- loaded files and initialized components are logged;
+- additional runtime paths use `error_log()` when that debug flag is enabled.
+
+This strongly identifies the private repository as the matching implementation source, but it does **not** prove that production is deployed from that exact commit. Server-side deployment metadata would be needed to establish the precise deployed SHA.
+
+The requested implementation scope authorizes writes only to `theleadpartner/all_ways_colombia` and `theleadpartner/wootourism_public`. Therefore the private source was reviewed read-only and was not modified.
+
+Until repository ownership for the remediation is explicitly decided, `wootourism_public` remains documentation-only.
 
 ## 4. Production evidence recorded 2026-10-02
 
@@ -190,24 +196,33 @@ Once the actual source is present, any remediation PR must confirm:
 
 ## 10. PENDING and blockers
 
-### BLOCKER-WT-001 — canonical source absent
+### BLOCKER-WT-001 — runtime source absent from the authorized public repository
 
-The current repository does not contain the WooTourism implementation. Code remediation is blocked until the canonical production source is identified and made auditable.
+`wootourism_public` still contains no PHP/JS/CSS runtime. The matching private implementation has been identified, but copying private source into a public repository would be a separate publication/governance decision and is not authorized by this remediation.
 
-This is a source-availability blocker, not an architectural PENDING.
+### WT-PENDING-001 — choose the canonical write target for WooTourism remediation
 
-### PENDING
+**Decision required before code changes:**
 
-None created by this documentation change.
+- **Option A — recommended:** keep `theleadpartner/wootourism` as the canonical runtime owner and explicitly authorize remediation there. This avoids publishing private source and preserves the existing owner/source-of-truth relationship.
+- **Option B:** intentionally synchronize approved WooTourism source into `wootourism_public` and make that repository the canonical owner. This requires an explicit decision about public exposure, synchronization ownership and retirement of the previous private source to avoid dual truth.
 
-If the future audit discovers a decision involving a new persistent cache, new source of truth, new endpoint, new background job or changed price semantics, that specific decision must be documented and approved before implementation.
+No code dependent on this decision is implemented in either repository.
+
+### Other PENDING
+
+None.
+
+If a later audit discovers a decision involving a new persistent cache, new endpoint, new background job or changed price semantics, that specific decision must be documented and approved before implementation.
 
 ## 11. Completion criteria
 
 WooTourism's part of this remediation can only be considered complete when:
 
-1. the canonical deployed source has been identified;
-2. owner/source-of-truth and price contracts are verified;
-3. profiling confirms or excludes WooTourism as a material contributor to the reported TTFB;
-4. any necessary code changes are implemented in the canonical owner rather than duplicated in this placeholder repository;
-5. the integration with `theleadpartner/all_ways_colombia` is revalidated.
+1. `WT-PENDING-001` is resolved and a single canonical write target is authorized;
+2. the exact deployed source/version is verified where operationally possible;
+3. owner/source-of-truth and price contracts are verified;
+4. high-volume normal-request logging is removed or production-gated in the canonical owner;
+5. profiling confirms or excludes WooTourism as a material contributor to the reported TTFB;
+6. any necessary code changes are implemented in the canonical owner rather than duplicated in this placeholder repository;
+7. the integration with `theleadpartner/all_ways_colombia` is revalidated.
