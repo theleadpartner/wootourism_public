@@ -4,7 +4,7 @@
 **Baseline branch:** `main`  
 **Baseline HEAD:** `107bd36eccb87de265126661726c8232750bf1da`  
 **Date:** 2026-10-02  
-**Status:** Documentation-only public companion. `WT-PENDING-001` Option A was approved on 2026-10-02: `theleadpartner/wootourism` remains the canonical private runtime owner and remediation is now implemented there in PR #1. `wootourism_public` intentionally remains non-runtime.
+**Status:** Documentation-only public companion. `WT-PENDING-001` Option A was approved on 2026-10-02: `theleadpartner/wootourism` remains the canonical private runtime owner. Private PR #1 was merged on 2026-10-02 and canonical `main` advanced to `226e7b2dc725cb013c42601da24874430853c85d`. `wootourism_public` intentionally remains non-runtime.
 
 ## 1. Purpose
 
@@ -45,9 +45,7 @@ The private bootstrap also contains the production-relevant pattern:
 
 This strongly identifies the private repository as the matching implementation source, but it does **not** prove that production is deployed from that exact commit. Server-side deployment metadata would be needed to establish the precise deployed SHA.
 
-The requested implementation scope authorizes writes only to `theleadpartner/all_ways_colombia` and `theleadpartner/wootourism_public`. Therefore the private source was reviewed read-only and was not modified.
-
-Repository ownership is now decided: `theleadpartner/wootourism` remains the canonical runtime owner. `wootourism_public` remains documentation-only and must not receive copied runtime source as part of this remediation.
+Repository ownership is now decided: `theleadpartner/wootourism` remains the canonical runtime owner. After explicit approval of `WT-PENDING-001` Option A, the private source was remediated in place and PR #1 was merged. `wootourism_public` remains documentation-only and must not receive copied runtime source as part of this remediation.
 
 ## 4. Production evidence recorded 2026-10-02
 
@@ -64,9 +62,9 @@ Observed in production:
 
 The production log also reveals filenames/classes such as `class-wootourism-pricing.php`, `class-wootourism-cart.php`, `class-wootourism-ajax-handler.php`, `class-wootourism-order-status.php` and several frontend/dashboard classes. These names are diagnostic evidence only; their implementations are not present here and must not be reconstructed from log strings.
 
-### Required remediation once canonical source is available
+### Required remediation — implemented in canonical private PR #1
 
-The first WooTourism implementation PR should, before broader optimization:
+The merged WooTourism implementation PR completed the following before broader optimization:
 
 1. remove or production-gate normal-success-path `error_log()` tracing and array dumps;
 2. preserve genuine warnings/errors needed for operational diagnosis;
@@ -197,7 +195,7 @@ The first implementation PR in the canonical WooTourism owner must preserve at m
 - checkout identification fields;
 - existing custom-table schemas and option/version ownership.
 
-### Authorized remediation design once WT-PENDING-001 is resolved
+### Authorized remediation design — implemented after WT-PENDING-001 approval
 
 Use the existing owners only:
 
@@ -256,9 +254,11 @@ Decision: keep `theleadpartner/wootourism` as the canonical private runtime owne
 
 Implementation PR:
 
-- `theleadpartner/wootourism` PR #1 — `perf: remediate WooTourism production log flooding`
-- branch: `perf/debug-log-remediation-2026-10-02`
-- baseline main: `45bdae73168c499a7f39dfc8bf7f687d6fb0ba8a`
+- `theleadpartner/wootourism` PR #1 — `perf: remediate WooTourism production log flooding` — **MERGED 2026-10-02**
+- merge commit / current canonical main: `226e7b2dc725cb013c42601da24874430853c85d`
+- implementation branch: `perf/debug-log-remediation-2026-10-02`
+- original baseline main: `45bdae73168c499a7f39dfc8bf7f687d6fb0ba8a`
+- target plugin version after merge: `1.0.3`
 
 ### Other PENDING
 
@@ -273,7 +273,7 @@ WooTourism's part of this remediation can only be considered complete when:
 1. `WT-PENDING-001` is resolved — complete;
 2. a single canonical write target is authorized — complete (`theleadpartner/wootourism`);
 3. owner/source-of-truth and price contracts are verified — complete for this remediation scope;
-4. high-volume normal-request logging is removed/production-gated in the canonical owner — implemented in private PR #1, pending merge/deploy;
-5. the exact deployed version is verified after deployment;
+4. high-volume normal-request logging is removed/production-gated in the canonical owner — **complete in merged private PR #1**;
+5. the exact deployed version (WooTourism 1.0.3) is verified after deployment;
 6. fresh log-growth and TTFB measurements confirm the runtime effect;
 7. the integration with `theleadpartner/all_ways_colombia` is revalidated after deployment.
