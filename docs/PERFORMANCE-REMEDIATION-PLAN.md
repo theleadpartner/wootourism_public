@@ -4,7 +4,7 @@
 **Baseline branch:** `main`  
 **Baseline HEAD:** `107bd36eccb87de265126661726c8232750bf1da`  
 **Date:** 2026-10-02  
-**Status:** Documentation only. A matching WooTourism source repository has now been identified in `theleadpartner/wootourism`, but implementation remains blocked in this repository because `wootourism_public` contains no runtime source and the private repository is outside the authorized write scope of this remediation.
+**Status:** Documentation-only public companion. `WT-PENDING-001` Option A was approved on 2026-10-02: `theleadpartner/wootourism` remains the canonical private runtime owner and remediation is now implemented there in PR #1. `wootourism_public` intentionally remains non-runtime.
 
 ## 1. Purpose
 
@@ -47,7 +47,7 @@ This strongly identifies the private repository as the matching implementation s
 
 The requested implementation scope authorizes writes only to `theleadpartner/all_ways_colombia` and `theleadpartner/wootourism_public`. Therefore the private source was reviewed read-only and was not modified.
 
-Until repository ownership for the remediation is explicitly decided, `wootourism_public` remains documentation-only.
+Repository ownership is now decided: `theleadpartner/wootourism` remains the canonical runtime owner. `wootourism_public` remains documentation-only and must not receive copied runtime source as part of this remediation.
 
 ## 4. Production evidence recorded 2026-10-02
 
@@ -246,18 +246,19 @@ Once the actual source is present, any remediation PR must confirm:
 
 ## 11. PENDING and blockers
 
-### BLOCKER-WT-001 — runtime source absent from the authorized public repository
+### BLOCKER-WT-001 — RESOLVED by canonical owner decision
 
-`wootourism_public` still contains no PHP/JS/CSS runtime. The matching private implementation has been identified, but copying private source into a public repository would be a separate publication/governance decision and is not authorized by this remediation.
+The runtime remains absent from `wootourism_public` by design. This is no longer a blocker because the canonical runtime owner is explicitly `theleadpartner/wootourism`.
 
-### WT-PENDING-001 — choose the canonical write target for WooTourism remediation
+### WT-PENDING-001 — APPROVED, Option A
 
-**Decision required before code changes:**
+Decision: keep `theleadpartner/wootourism` as the canonical private runtime owner. Do not copy or synchronize the plugin source into this public repository as part of the performance remediation.
 
-- **Option A — recommended:** keep `theleadpartner/wootourism` as the canonical runtime owner and explicitly authorize remediation there. This avoids publishing private source and preserves the existing owner/source-of-truth relationship.
-- **Option B:** intentionally synchronize approved WooTourism source into `wootourism_public` and make that repository the canonical owner. This requires an explicit decision about public exposure, synchronization ownership and retirement of the previous private source to avoid dual truth.
+Implementation PR:
 
-No code dependent on this decision is implemented in either repository.
+- `theleadpartner/wootourism` PR #1 — `perf: remediate WooTourism production log flooding`
+- branch: `perf/debug-log-remediation-2026-10-02`
+- baseline main: `45bdae73168c499a7f39dfc8bf7f687d6fb0ba8a`
 
 ### Other PENDING
 
@@ -269,10 +270,10 @@ If a later audit discovers a decision involving a new persistent cache, new endp
 
 WooTourism's part of this remediation can only be considered complete when:
 
-1. `WT-PENDING-001` is resolved and a single canonical write target is authorized;
-2. the exact deployed source/version is verified where operationally possible;
-3. owner/source-of-truth and price contracts are verified;
-4. high-volume normal-request logging is removed or production-gated in the canonical owner;
-5. profiling confirms or excludes WooTourism as a material contributor to the reported TTFB;
-6. any necessary code changes are implemented in the canonical owner rather than duplicated in this placeholder repository;
-7. the integration with `theleadpartner/all_ways_colombia` is revalidated.
+1. `WT-PENDING-001` is resolved — complete;
+2. a single canonical write target is authorized — complete (`theleadpartner/wootourism`);
+3. owner/source-of-truth and price contracts are verified — complete for this remediation scope;
+4. high-volume normal-request logging is removed/production-gated in the canonical owner — implemented in private PR #1, pending merge/deploy;
+5. the exact deployed version is verified after deployment;
+6. fresh log-growth and TTFB measurements confirm the runtime effect;
+7. the integration with `theleadpartner/all_ways_colombia` is revalidated after deployment.
