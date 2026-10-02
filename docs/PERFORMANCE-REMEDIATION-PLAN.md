@@ -162,7 +162,57 @@ The companion remediation must preserve WooTourism's canonical price contract.
 
 If a derived range cache is introduced in `all_ways_colombia`, WooTourism must expose or already have a reliable invalidation signal for all relevant price mutations. If it does not, that decision requires explicit approval before a persistent cache is merged.
 
-## 8. Runtime changes authorized by this documentation PR
+## 8. Verified private-source audit for the first implementation PR
+
+Read-only inspection of `theleadpartner/wootourism@45bdae73168c499a7f39dfc8bf7f687d6fb0ba8a` identified the following high-priority logging owners:
+
+| Owner | Observed `error_log()` calls | Notes |
+| --- | ---: | --- |
+| `wootourism.php` | multiple | Bootstrap defaults `WOOTOURISM_DEBUG` to `true` and logs normal initialization/load/component success paths. |
+| `includes/class-wootourism-cart.php` | 45 | Mostly debug-guarded, but the default-true flag makes cart/checkout/product hooks noisy in production; includes `print_r()` dumps. |
+| `includes/class-wootourism-ajax-handler.php` | 51 | Highest-risk logging owner: many request-path logs are not guarded by `WOOTOURISM_DEBUG`, including `$_POST`, request headers, nonce flow, booking payloads, pricing values and stack traces. |
+| `includes/class-wootourism-checkout-fields.php` | 8 | Debug-guarded lifecycle and save tracing. |
+| `includes/class-wootourism-order-status.php` | 2 | Debug-guarded initialization and order-status array dump. |
+
+Other reviewed owners:
+
+- `includes/class-wootourism.php`: canonical product/booking hooks and price filters; no `error_log()` found in the reviewed file.
+- `includes/class-wootourism-pricing.php`: pricing owner; no `error_log()` found in the reviewed file.
+- `includes/class-wootourism-booking-types.php`: no `error_log()` found in the reviewed file.
+- `includes/class-wootourism-availability.php`: owns `wp_ajax_wootourism_check_availability` / nopriv equivalent; no `error_log()` found in the reviewed file.
+
+### Canonical contracts to preserve during remediation
+
+The first implementation PR in the canonical WooTourism owner must preserve at minimum:
+
+- existing WooCommerce booking/product price hooks;
+- cart-item booking data and calculated-price behavior;
+- `woocommerce_before_calculate_totals` pricing path;
+- order-line booking persistence;
+- booking database writes and status updates;
+- payment-gateway filtering;
+- order-status semantics;
+- `wp_ajax_wootourism_calculate_price` and guest equivalent;
+- `wp_ajax_wootourism_check_availability` and guest equivalent;
+- checkout identification fields;
+- existing custom-table schemas and option/version ownership.
+
+### Authorized remediation design once WT-PENDING-001 is resolved
+
+Use the existing owners only:
+
+1. change the bootstrap default so production does not force verbose debug logging;
+2. remove normal-success-path tracing from bootstrap, cart, checkout fields and order-status paths;
+3. remove request/payload/header/response dumps from the AJAX pricing handler;
+4. retain bounded logging only for genuine exceptional failures where operationally useful;
+5. do not change AJAX actions, nonces, response shapes, booking/pricing semantics, checkout data or database ownership;
+6. bump WooTourism plugin version once so deployment can be verified unambiguously;
+7. validate that the diff contains no pricing, booking, checkout or persistence behavior change;
+8. after deployment, rotate/truncate the historical log and remeasure log growth and TTFB before considering wider optimization.
+
+No new logger, endpoint, cache, cron, worker, table or compatibility layer is needed for this remediation.
+
+## 9. Runtime changes authorized by this documentation PR
 
 None.
 
@@ -180,7 +230,7 @@ This PR must not add:
 - frontend JS/CSS
 - production code copied from another repository
 
-## 9. Validation gates for a future implementation PR
+## 10. Validation gates for a future implementation PR
 
 Once the actual source is present, any remediation PR must confirm:
 
@@ -194,7 +244,7 @@ Once the actual source is present, any remediation PR must confirm:
 - current product booking flows remain functional;
 - complete branch diff contains only authorized remediation changes.
 
-## 10. PENDING and blockers
+## 11. PENDING and blockers
 
 ### BLOCKER-WT-001 — runtime source absent from the authorized public repository
 
@@ -215,7 +265,7 @@ None.
 
 If a later audit discovers a decision involving a new persistent cache, new endpoint, new background job or changed price semantics, that specific decision must be documented and approved before implementation.
 
-## 11. Completion criteria
+## 12. Completion criteria
 
 WooTourism's part of this remediation can only be considered complete when:
 
