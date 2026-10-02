@@ -266,7 +266,20 @@ None.
 
 If a later audit discovers a decision involving a new persistent cache, new endpoint, new background job or changed price semantics, that specific decision must be documented and approved before implementation.
 
-## 12. Completion criteria
+## 12. Companion All Ways closeout
+
+The companion `theleadpartner/all_ways_colombia` repository completed its repository-side closeout in merged PR #5 on 2026-10-02.
+
+Verified All Ways canonical main after that merge:
+
+- `4321e40126803d0b668c86a1d7a4d389110eaeb5`
+- WC Dynamic Search Menu remediation Phases 1–4: complete in GitHub.
+- WooTourism canonical remediation: merged at `226e7b2dc725cb013c42601da24874430853c85d`.
+- Remaining shared work: Phase 5 operational deployment/runtime validation only.
+
+No runtime source is added to this public companion repository.
+
+## 13. Completion criteria
 
 WooTourism's part of this remediation can only be considered complete when:
 
