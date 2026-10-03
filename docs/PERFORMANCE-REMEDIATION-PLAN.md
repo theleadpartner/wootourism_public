@@ -279,7 +279,24 @@ Verified All Ways canonical main after that merge:
 
 No runtime source is added to this public companion repository.
 
-## 13. Completion criteria
+## 13. All Ways Phase 5 page-cache follow-up
+
+A later production audit generated at 2026-10-02 18:05:11 -0500 shows that the shared remediation is not yet complete operationally:
+
+- the historic All Ways `debug.log` remained about 699 MiB but had not been modified for roughly one hour at audit time, which is consistent with the prior WooTourism/WC DSM log-flood fixes taking effect;
+- anonymous All Ways homepage requests still consistently paid an approximately 2.2-second PHP path;
+- no effective All Ways full-page cache was demonstrated by the audit.
+
+The follow-up implementation is owned entirely by `theleadpartner/all_ways_colombia` PR #6:
+
+- branch: `perf/page-cache-readiness-2026-10-02`;
+- WC DSM target version: 1.0.4;
+- scope: trim proven avoidable WC DSM frontend bootstrap work and define the operational page-cache/profiling/log-rotation gate;
+- no WooTourism runtime change is required by this follow-up.
+
+Page cache must remain outside this public documentation repository. If production already has WP Rocket or a host-level page cache, that existing owner must be repaired/reused. If production has no existing full-page cache owner, the conditional `PERF-PENDING-002` is owned by the All Ways remediation and must be resolved there rather than creating a cache in WooTourism.
+
+## 14. Completion criteria
 
 WooTourism's part of this remediation can only be considered complete when:
 
